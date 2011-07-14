@@ -1,0 +1,12 @@
+= jpdfer
+
+JRuby gem to wrap iText, the PDF manipulation java libraries. Allows
+you to:
+
+
+* Inspect PDF forms
+* Write to form fields
+* Flatten PDF forms
+
+
+
