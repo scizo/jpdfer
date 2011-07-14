@@ -32,17 +32,34 @@ describe "Pdf Acceptance" do
         :unimportant_field => '',
         :semiimportant_field => '',
         :tuesday_field => '',
-        :must_not_be_left_field => ''
+        :must_not_be_left_blank_field => ''
       }
     end
   end
 
-  # describe '#set_field' do
-  #   it 'should fill the field with given name with given value' do
-  #     pdf = Pdf.new(@pdf_path)
-  #     pdf.set_field(:
-  #   end
-  # end
+  describe '#get_field' do
+    it 'should return the field value' do
+      @pdf.get_field(:important_field).should == ""
+    end
+  end
+
+  describe '#set_field' do
+    it 'should fill the field with given name with given value' do
+      @pdf.set_field(:important_field, "I am important")
+      @pdf.get_field(:important_field).should == "I am important"
+    end
+
+    it 'should update fields' do
+      @pdf.set_field(:important_field, "I am important")
+      @pdf.fields.should == {
+        :important_field => 'I am important',
+        :unimportant_field => '',
+        :semiimportant_field => '',
+        :tuesday_field => '',
+        :must_not_be_left_blank_field => ''
+      }
+    end
+  end
 
   describe '#save_as' do
     before(:each) do
@@ -57,7 +74,22 @@ describe "Pdf Acceptance" do
     it 'should write the pdf to a new path' do
       @pdf.save_as(@new_path)
 
-      checksum(@pdf_path).should == checksum(@new_path)
+      new_pdf = Pdf.new(@new_path)
+      new_pdf.fields.should == {
+        :important_field => '',
+        :unimportant_field => '',
+        :semiimportant_field => '',
+        :tuesday_field => '',
+        :must_not_be_left_blank_field => ''
+      }
+    end
+
+    it 'should save updated fields to the new file' do
+      @pdf.set_field(:important_field, "I am important")
+      @pdf.save_as(@new_path)
+
+      new_pdf = Pdf.new(@new_path)
+      new_pdf.get_field(:important_field).should == "I am important"
     end
   end
 end
