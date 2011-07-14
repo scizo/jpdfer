@@ -1,10 +1,16 @@
 require 'spec_helper'
 
-describe Pdf do
+describe "Pdf Acceptance" do
   before(:each) do
-    @pdf_path = File.expand_path(File.join(File.dirname(__FILE__), 'data', 'simple_form.pdf'))
+    @pdf_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'simple_form.pdf'))
     @pdf = Pdf.new(@pdf_path)
     @values = {}
+  end
+
+  describe 'sanity check' do
+    it 'should be sane' do
+      69.should == 69
+    end
   end
 
   describe '.new' do
@@ -19,17 +25,17 @@ describe Pdf do
     end
   end
 
-  # describe '#fields' do
-  #   it 'should return a hash of field name value pairs' do
-  #     @pdf.fields.should == {
-  #       :important_field => '',
-  #       :unimportant_field => '',
-  #       :semiimportant_field => '',
-  #       :tuesday_field => '',
-  #       :must_not_be_left_field => ''
-  #     }
-  #   end
-  # end
+  describe '#fields' do
+    it 'should return a hash of field name value pairs' do
+      @pdf.fields.should == {
+        :important_field => '',
+        :unimportant_field => '',
+        :semiimportant_field => '',
+        :tuesday_field => '',
+        :must_not_be_left_field => ''
+      }
+    end
+  end
 
   # describe '#set_field' do
   #   it 'should fill the field with given name with given value' do
@@ -55,5 +61,3 @@ describe Pdf do
     end
   end
 end
-
-#TODO: Add checkbox field to simple_form.pdf
