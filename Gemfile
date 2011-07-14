@@ -1,3 +1,8 @@
 source :rubygems
 
-gem "rspec"
+group :test do
+  gem "rspec"
+  gem "ZenTest"
+  gem "autotest-fsevent"
+  gem "autotest-growl"
+end
