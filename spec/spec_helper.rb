@@ -1,5 +1,4 @@
 # spec_helper.rb
-
 require 'pdf'
 require 'digest/md5'
 require 'fileutils'
