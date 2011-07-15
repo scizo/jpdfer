@@ -11,7 +11,9 @@ class Pdf
   
   def initialize(path)
     @data = File.read(path)
+    @output_buffer = StringIO.new
     @reader = PdfReader.new(@data.to_java_bytes)
+    @stamper = PdfStamper.new(@reader, @output_buffer.to_outputstream)
     @changes = {}
   end
 
@@ -22,15 +24,25 @@ class Pdf
   # save_as returns *UNTESTED* if the PDF form is not valid
   # save_as returns *UNTESTED* if the file cannot be written
   def save_as(path, flatten=false)
-    File.open(path, 'wb') do |file|
-      stamper = PdfStamper.new(@reader, file.to_outputstream)
-      form = stamper.getAcroFields
-      @changes.each_pair do |name, value|
-        form.setField(name.to_s, value)
-      end
-      stamper.setFormFlattening(flatten)
-      stamper.close
+    form = @stamper.getAcroFields
+    @changes.each_pair do |name, value|
+      form.setField(name.to_s, value)
     end
+    @stamper.setFormFlattening(flatten)
+    @stamper.close
+    @output_buffer.rewind
+    File.open(path, 'wb') do |file|
+      file.write(@output_buffer.string)
+    end
+    #File.open(path, 'wb') do |file|
+    #  stamper = PdfStamper.new(@reader, file.to_outputstream)
+    #  form = stamper.getAcroFields
+    #  @changes.each_pair do |name, value|
+    #    form.setField(name.to_s, value)
+    #  end
+    #  stamper.setFormFlattening(flatten)
+    #  stamper.close
+    #end
   end
 
   # Returns fields defined in this PDF form and their values, if any.

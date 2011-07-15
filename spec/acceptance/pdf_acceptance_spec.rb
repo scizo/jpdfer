@@ -89,6 +89,12 @@ describe "Pdf Acceptance" do
         :must_not_be_left_blank_field => ''
       }
     end
+
+#     describe "with nonexistent field name" do
+#       it "should raise Pdf::NonexistentFieldError" do
+#         lambda { @pdf.set_field(:monkey, 'Spider') }.should raise_error(Pdf::NonexistentFieldError)
+#       end
+#     end
   end
 
   describe '#save_as' do
