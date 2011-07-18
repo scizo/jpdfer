@@ -68,7 +68,7 @@ describe "Pdf Acceptance" do
       @pdf.set_field(:important_field, "I am important").should == 'I am important'
     end
 
-    it 'should update field' do
+    it 'should update fields' do
       @pdf.set_field(:important_field, "I am important")
       @pdf.fields.should == {
         :important_field => 'I am important',
@@ -81,6 +81,7 @@ describe "Pdf Acceptance" do
 
     describe "with existing field name" do
       it "should not raise an error" do
+        lambda { @pdf.set_field(:important_field, 'I am important') }.should_not raise_error(Pdf::NonexistentFieldError)
       end
     end
 
@@ -102,17 +103,11 @@ describe "Pdf Acceptance" do
     end
 
     it 'should update fields' do
-      @pdf.set_field(:important_field, "I am important")
-      @pdf.fields.should == {
-        :important_field => 'I am important',
-        :unimportant_field => '',
-        :semiimportant_field => '',
-        :tuesday_field => '',
-        :must_not_be_left_blank_field => ''
-      }
+      @pdf.set_fields(@filled_fields)
+      @pdf.fields.should == @filled_fields
     end
 
-    it 'should retun the set fields' do
+    it 'should return the set fields' do
       @pdf.set_fields(@filled_fields).should == @filled_fields
     end
 
@@ -155,31 +150,37 @@ describe "Pdf Acceptance" do
       new_pdf.get_field(:important_field).should == "I am important"
     end
 
+    describe 'given flatten=true' do
+      it 'should save the pdf without a form' do
+        @pdf.save_as(@new_path, true)
+
+        new_pdf = Pdf.new(@new_path)
+        new_pdf.should_not have_form
+      end
+    end
+
     describe 'with a saved PDF' do
-#       describe 'saving again' do
-#         it "should raise IOError" do
-#           @pdf.save_as(@new_path)
-#           lambda { @pdf.save_as(@new_path) }.should raise_error(IOError, /not opened for writing/)
-#         end
-#       end
+      before(:each) do
+        @pdf.save_as(@new_path)
+      end
 
-#       describe "#set_field" do
-#         it "should raise IOError" do
+      describe 'saving again' do
+        it "should raise Pdf::ReadOnlyError" do
+          lambda { @pdf.save_as(@new_path) }.should raise_error(Pdf::ReadOnlyError, /Cannot save a previously saved pdf/)
+        end
+      end
 
-#         end
-#       end
+      describe "#set_field" do
+        it "should raise Pdf:ReadOnlyError" do
+          lambda { @pdf.set_field(:important_field, 'I am important') }.should raise_error(Pdf::ReadOnlyError, /Previously saved pdfs are read-only/)
+        end
+      end
 
-#       describe "#set_fields" do
-#         it "should raise IOError" do
-
-#         end
-#       end
-
-#       describe 'saving a flattened PDF' do
-#         it "should save the PDF flattened" do
-
-#         end
-#       end
+      describe "#set_fields" do
+        it "should raise Pdf::ReadOnlyError" do
+          lambda { @pdf.set_fields(@filled_fields) }.should raise_error(Pdf::ReadOnlyError, /Previously saved pdfs are read-only/)
+        end
+      end
     end
   end
 
@@ -220,7 +221,6 @@ describe "Pdf Acceptance" do
     end
   end
 
-  # If you save_as twice, once with flatten false, once with flatten true, PDF doesn't appear to be flattened.
   # set_field returns some error if the form field is incorrect (e.g. setting a checkbox with something silly like 'monkey' or 'true' instead of 'Yes'
   # save_as returns *UNTESTED* if the PDF form is not valid
 end
