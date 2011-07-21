@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe "Pdf Acceptance" do
   before(:each) do
-    @pdf_folder_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data'))
-    pdf_path = File.join(@pdf_folder_path, 'simple_form.pdf')
+    @data_path = File.join(JPDFER_ROOT, 'spec', 'data')
+    pdf_path = File.join(@data_path, 'simple_form.pdf')
     @pdf = Pdf.new(pdf_path)
     @values = {}
     @unfilled_fields = {
@@ -121,7 +121,7 @@ describe "Pdf Acceptance" do
 
   describe '#save_as' do
     before(:each) do
-      @new_path = File.join(@pdf_folder_path, 'simple_form_new.pdf')
+      @new_path = File.join(@data_path, 'simple_form_new.pdf')
       FileUtils.rm_f(@new_path)
     end
 
@@ -209,14 +209,57 @@ describe "Pdf Acceptance" do
   describe '#has_form?' do
     describe 'given a pdf with a form' do
       it 'should return true' do
-        @pdf.has_form?.should be(true)
+        @pdf.should have_form
       end
     end
 
     describe 'given a pdf without a form' do
       it 'should return false' do
-        pdf = Pdf.new(File.join(@pdf_folder_path, 'flattened.pdf'))
-        pdf.has_form?.should be(false)
+        pdf = Pdf.new(File.join(@data_path, 'simple_form_flattened.pdf'))
+        pdf.should_not have_form
+      end
+    end
+  end
+
+  describe 'given a pdf that we have flattened' do
+    before(:each) do
+      @new_pdf_path = File.join(@data_path, 'we_flattened.pdf')
+      @pdf.set_fields(@filled_fields)
+      @pdf.save_as(@new_pdf_path, true)
+      @pdf = Pdf.new(@new_pdf_path)
+    end
+
+    after(:each) do
+      FileUtils.rm_f(@new_pdf_path)
+    end
+
+    describe '#flattened_fields' do
+      it 'returns a hash of field name value pairs of previous form fields' do
+        @pdf.flattened_fields.should == @filled_fields
+      end
+    end
+
+    describe '#has_flattened_fields?' do
+      it 'should return true' do
+        @pdf.should have_flattened_fields
+      end
+    end
+  end
+
+  describe 'given a pdf that is not flattened, or we did not flatten' do
+    before(:each) do
+      @pdf = Pdf.new(File.join(@data_path, 'simple_form_flattened.pdf'))
+    end
+
+    describe '#flattened_fields' do
+      it 'should return an empty hash' do
+        @pdf.flattened_fields.should == {}
+      end
+    end
+
+    describe '#has_flattened_fields' do
+      it 'should be false' do
+        @pdf.should_not have_flattened_fields
       end
     end
   end

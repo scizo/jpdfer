@@ -1,5 +1,5 @@
 # spec_helper.rb
-require 'pdf'
+require 'jpdfer'
 require 'digest/md5'
 require 'fileutils'
 

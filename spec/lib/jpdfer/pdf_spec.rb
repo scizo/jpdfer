@@ -4,7 +4,8 @@ require 'spec_helper'
 # IMPORTANT: These are model/unit specs! Test in isolation as much as possible!
 describe Pdf do
   before(:each) do
-    @pdf_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'data', 'simple_form.pdf'))
+    @data_path = File.join(JPDFER_ROOT, 'spec', 'data')
+    @pdf_path = File.join(@data_path, 'simple_form.pdf')
     @pdf = Pdf.new(@pdf_path)
     @values = {}
   end
