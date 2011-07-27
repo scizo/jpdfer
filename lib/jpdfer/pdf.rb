@@ -189,4 +189,12 @@ class Pdf
     @stamper.getSignatureAppearance.setCertificationLevel(certification_level)
   end
 
+  def set_signature_reason(reason)
+    @stamper.getSignatureAppearance.setReason(reason)
+  end
+
+  def set_signature_location(location)
+    @stamper.getSignatureAppearance.setLocation(location)
+  end
+
 end
