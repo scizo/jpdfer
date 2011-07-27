@@ -63,6 +63,15 @@ describe "Pdf Acceptance" do
           end
         end
 
+        describe '#set_certification_level' do
+          it 'should have the given certification level when saved' do
+            @pdf.set_certification_level(:no_changes_allowed)
+            @pdf.save_as(@signed_pdf_path)
+            @pdf = Pdf.new(@signed_pdf_path)
+            @pdf.certification_level.should == :no_changes_allowed
+          end
+        end
+
         # TODO: I would like to add this functionality but havn't researched the java
         # KeyStore and encryption classes enough yet
         #
@@ -91,6 +100,22 @@ describe "Pdf Acceptance" do
         #     end
         #   end
         # end
+      end
+    end
+  end
+
+  describe '#certification_level' do
+    it 'should return nil for an unsigned pdf' do
+      @pdf.certification_level.should == :not_certified
+    end
+
+    describe 'called on a signed pdf' do
+      before(:each) do
+        @pdf = Pdf.new(File.join(@data_path, 'simple_form_flattened_signed.pdf'))
+      end
+
+      it 'it should return the certification level' do
+        @pdf.certification_level.should == :no_changes_allowed
       end
     end
   end

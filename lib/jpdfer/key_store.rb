@@ -1,15 +1,12 @@
 class KeyStore
-  class ConfigurationError < Exception; end
-  module J
-    include_package "java.io"
-    include_package "java.security"
-    include_package "java.lang"
-  end
+  JavaFileInputStream = java.io.FileInputStream
+  JavaKeyStore = java.security.KeyStore
+  JavaString = java.lang.String
 
   def initialize(keystore_path, _alias, password)
     @alias, @password = _alias, password
-    @keystore = J::KeyStore::getInstance(J::KeyStore::getDefaultType())
-    @keystore.load(J::FileInputStream.new(keystore_path), J::String.new(@password).toCharArray)
+    @keystore = JavaKeyStore::getInstance(JavaKeyStore::getDefaultType())
+    @keystore.load(JavaFileInputStream.new(keystore_path), JavaString.new(@password).toCharArray)
   end
 
   def private_key
