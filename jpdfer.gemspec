@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.description = "Read and write PDF forms in JRuby"
   s.authors = ["Scott Nielsen", "David Brady"]
 
-  # ruby -rpp -e "pp (['README.rdoc'] + Dir['{{examples,jars,lib,protocol,spec}/**/*.{jar,rdoc,json,rb,txt,xml,yml}}'] + Dir['bin/*']).sort"
+  # ruby -rpp -e "pp (['README.rdoc'] + Dir['{{examples,jars,lib,protocol,spec}/**/*.{jar,rdoc,json,rb,txt,xml,yml,ks,pdf}}'] + Dir['bin/*']).sort"
   s.files = [
     "README.rdoc",
     "jars/bcmail-jdk16-146.jar",
@@ -19,6 +19,12 @@ Gem::Specification.new do |s|
     "lib/jpdfer/key_store.rb",
     "lib/jpdfer/pdf.rb",
     "spec/acceptance/jpdfer/pdf_acceptance_spec.rb",
+    "spec/data/flattened.pdf",
+    "spec/data/keystore.ks",
+    "spec/data/simple_form.pdf",
+    "spec/data/simple_form_flattened.pdf",
+    "spec/data/simple_form_flattened_signed.pdf",
+    "spec/data/simple_form_signed_by_someone_else.pdf",
     "spec/lib/jpdfer/pdf_spec.rb",
     "spec/spec_helper.rb"
   ]
