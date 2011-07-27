@@ -109,6 +109,10 @@ describe "Pdf Acceptance" do
       @save_path = File.join(@data_path, 'new_pdf.pdf')
     end
 
+    after(:each) do
+      FileUtils.rm_f(@save_path)
+    end
+
     it 'should instaniate a new pdf a pass it to the block and then save it' do
       Pdf.open(@pdf_path, @save_path) do |pdf|
         pdf.set_fields(@filled_fields)
