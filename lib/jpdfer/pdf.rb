@@ -30,12 +30,26 @@ class Pdf
     descriptions.count > 0 ? descriptions.first.text : ""
   end
 
-  def initialize(path)
+  # Currently the only option is :keystore
+  def initialize(path, options = {})
     @data = File.read(path)
     @output_buffer = StringIO.new
     reader = PdfReader.new(@data.to_java_bytes)
-    @stamper = PdfStamper.new(reader, @output_buffer.to_outputstream)
+    @stamper = create_stamper(reader, options[:keystore])
     @saved = false
+  end
+
+  # helper method for initialize not ment to be used publicly
+  def create_stamper(reader, keystore = nil)
+    if keystore
+      stamper = PdfStamper.createSignature(reader, @output_buffer.to_outputstream, "\0".ord)
+      key, certificate_chain = keystore.private_key, keystore.certificate_chain
+      signature_type = Pdf::PdfSignatureAppearance::SELF_SIGNED
+      stamper.getSignatureAppearance.setCrypto(key, certificate_chain, nil, signature_type)
+    else
+      stamper = PdfStamper.new(reader, @output_buffer.to_outputstream)
+    end
+    stamper
   end
 
   # Writes PDF to +path+. If +flatten+ is true, also flattens the form
@@ -140,6 +154,47 @@ class Pdf
   # true if the receiving Pdf instance was previously flattened with jpdfer
   def has_flattened_fields?
     flattened_fields.size > 0 ? true : false
+  end
+
+  # Returns the certification level of the pdf
+  def certification_level
+    case @stamper.reader.getCertificationLevel
+    when PdfSignatureAppearance::CERTIFIED_FORM_FILLING
+      level = :form_filling
+    when PdfSignatureAppearance::CERTIFIED_FORM_FILLING_AND_ANNOTATIONS
+      level = :form_filling_and_annotations
+    when PdfSignatureAppearance::CERTIFIED_NO_CHANGES_ALLOWED
+      level = :no_changes_allowed
+    when PdfSignatureAppearance::NOT_CERTIFIED
+      level = :not_certified
+    end
+    level
+  end
+
+  # Set the certification level on a pdf initialized with an optional keystore
+  #
+  # *level* must be one of :form_filling, :form_filling_and_annotations,
+  # :no_changes_allowed, :not_certified
+  def set_certification_level(level)
+    case level
+    when :form_filling
+      certification_level = PdfSignatureAppearance::CERTIFIED_FORM_FILLING
+    when :form_filling_and_annotations
+      certification_level = PdfSignatureAppearance::CERTIFIED_FORM_FILLING_AND_ANNOTATIONS
+    when :no_changes_allowed
+      certification_level = PdfSignatureAppearance::CERTIFIED_NO_CHANGES_ALLOWED
+    when :not_certified
+      level = PdfSignatureAppearance::NOT_CERTIFIED
+    end
+    @stamper.getSignatureAppearance.setCertificationLevel(certification_level)
+  end
+
+  def set_signature_reason(reason)
+    @stamper.getSignatureAppearance.setReason(reason)
+  end
+
+  def set_signature_location(location)
+    @stamper.getSignatureAppearance.setLocation(location)
   end
 
 end
