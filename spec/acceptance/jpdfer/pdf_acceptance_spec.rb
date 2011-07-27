@@ -104,6 +104,30 @@ describe "Pdf Acceptance" do
     end
   end
 
+  describe '.open' do
+    before(:each) do
+      @save_path = File.join(@data_path, 'new_pdf.pdf')
+    end
+
+    it 'should instaniate a new pdf a pass it to the block and then save it' do
+      Pdf.open(@pdf_path, @save_path) do |pdf|
+        pdf.set_fields(@filled_fields)
+      end
+      new_pdf = Pdf.new(@save_path)
+      new_pdf.fields.should == @filled_fields
+    end
+
+    describe 'given the flatten option' do
+      it 'should be saved with the flatten option' do
+        Pdf.open(@pdf_path, @save_path, :flatten => true) do |pdf|
+          pdf.set_fields(@filled_fields)
+        end
+        new_pdf = Pdf.new(@save_path)
+        new_pdf.flattened_fields.should == @filled_fields
+      end
+    end
+  end
+
   describe '#certification_level' do
     it 'should return nil for an unsigned pdf' do
       @pdf.certification_level.should == :not_certified

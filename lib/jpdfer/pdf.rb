@@ -30,6 +30,17 @@ class Pdf
     descriptions.count > 0 ? descriptions.first.text : ""
   end
 
+  def self.open(pdf_path, save_path, options={})
+    flatten = options.delete(:flatten)
+    pdf = self.new(pdf_path, options)
+    if block_given?
+      yield pdf
+      pdf.save_as(save_path, flatten)
+    else
+      pdf
+    end
+  end
+
   # Currently the only option is :keystore
   def initialize(path, options = {})
     @data = File.read(path)
@@ -189,10 +200,12 @@ class Pdf
     @stamper.getSignatureAppearance.setCertificationLevel(certification_level)
   end
 
+  # Sets the reason for the signature on the pdf
   def set_signature_reason(reason)
     @stamper.getSignatureAppearance.setReason(reason)
   end
 
+  # Sets the location of the signature on the pdf
   def set_signature_location(location)
     @stamper.getSignatureAppearance.setLocation(location)
   end
