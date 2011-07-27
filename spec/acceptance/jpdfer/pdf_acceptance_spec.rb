@@ -3,9 +3,8 @@ require 'spec_helper'
 describe "Pdf Acceptance" do
   before(:each) do
     @data_path = File.join(JPDFER_ROOT, 'spec', 'data')
-    pdf_path = File.join(@data_path, 'simple_form.pdf')
-    @pdf = Pdf.new(pdf_path)
-    @values = {}
+    @pdf_path = File.join(@data_path, 'simple_form.pdf')
+    @pdf = Pdf.new(@pdf_path)
     @unfilled_fields = {
       :important_field => '',
       :unimportant_field => '',
@@ -36,6 +35,62 @@ describe "Pdf Acceptance" do
     describe 'given missing file' do
       it 'should raise Errno::ENOENT (File Not Found)' do
         lambda { Pdf.new('derp.pdf') }.should raise_error(Errno::ENOENT)
+      end
+    end
+
+    describe 'given an optional keystore' do
+      describe 'when Pdf is configured' do
+        before(:each) do
+          @keystore = KeyStore.new(
+            File.join(@data_path, 'keystore.ks'),
+            'jpdfer',
+            'durrderp',
+          )
+          @pdf = Pdf.new(@pdf_path, :keystore => @keystore)
+          @signed_pdf_path = File.join(@data_path, 'new_signed.pdf')
+        end
+
+        after(:each) do
+          FileUtils.rm_f(@signed_pdf_path)
+        end
+
+        it 'should create a signed pdf if saved' do
+          @pdf.save_as(@signed_pdf_path)
+          File.open(@signed_pdf_path) do |file|
+            data = file.read
+            data['Scott Nielsen'].should == 'Scott Nielsen'
+            data['Saxton Horne'].should == 'Saxton Horne'
+          end
+        end
+
+        # TODO: I would like to add this functionality but havn't researched the java
+        # KeyStore and encryption classes enough yet
+        #
+        # describe 'given a pdf signed with the private_key and certificate' do
+        #   before(:each) do
+        #     pdf_path = File.join(@data_path, 'simple_form_flattened_signed.pdf')
+        #     @pdf = Pdf.new(pdf_path, :keystore => @keystore)
+        #   end
+
+        #   describe '#signed?' do
+        #     it 'should be true' do
+        #       @pdf.should be_signed
+        #     end
+        #   end
+        # end
+
+        # describe 'given a pdf not signed with the private_key and certificate' do
+        #   before(:each) do
+        #     pdf_path = File.join(@data_path, 'simple_form_signed_by_someone_else.pdf')
+        #     @pdf = Pdf.new(pdf_path, :keystore => @keystore)
+        #   end
+
+        #   describe '#signed?' do
+        #     it 'should be false' do
+        #       @pdf.should_not be_signed
+        #     end
+        #   end
+        # end
       end
     end
   end

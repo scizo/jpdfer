@@ -5,6 +5,7 @@
 class Pdf
   class NonexistentFieldError < Exception; end
   class ReadOnlyError < Exception; end
+  class ConfigurationError < Exception; end
   include_package "com.itextpdf.text.pdf"
   include_package "com.itextpdf.text.xml.xmp"
 
@@ -30,12 +31,26 @@ class Pdf
     descriptions.count > 0 ? descriptions.first.text : ""
   end
 
-  def initialize(path)
+  # Currently the only option is :keystore
+  def initialize(path, options = {})
     @data = File.read(path)
     @output_buffer = StringIO.new
     reader = PdfReader.new(@data.to_java_bytes)
-    @stamper = PdfStamper.new(reader, @output_buffer.to_outputstream)
+    @stamper = create_stamper(reader, options[:keystore])
     @saved = false
+  end
+
+  # helper method for initialize not ment to be used publicly
+  def create_stamper(reader, keystore = nil)
+    if keystore
+      stamper = PdfStamper.createSignature(reader, @output_buffer.to_outputstream, "\0".ord)
+      key, certificate_chain = keystore.private_key, keystore.certificate_chain
+      signature_type = Pdf::PdfSignatureAppearance::SELF_SIGNED
+      stamper.getSignatureAppearance.setCrypto(key, certificate_chain, nil, signature_type)
+    else
+      stamper = PdfStamper.new(reader, @output_buffer.to_outputstream)
+    end
+    stamper
   end
 
   # Writes PDF to +path+. If +flatten+ is true, also flattens the form
