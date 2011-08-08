@@ -8,6 +8,9 @@ Gem::Specification.new do |s|
   s.description = "Read and write PDF forms in JRuby"
   s.authors = ["Scott Nielsen", "David Brady"]
 
+  s.add_dependency "nokogiri"
+  s.add_dependency "json-jruby"
+
   # ruby -rpp -e "pp (['README.rdoc'] + Dir['{{examples,jars,lib,protocol,spec}/**/*.{jar,rdoc,json,rb,txt,xml,yml,ks,pdf}}'] + Dir['bin/*']).sort"
   s.files = [
     "README.rdoc",
