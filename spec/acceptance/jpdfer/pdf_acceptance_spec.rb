@@ -1,8 +1,10 @@
 require 'spec_helper'
 
+module Jpdfer
+
 describe "Pdf Acceptance" do
   before(:each) do
-    @data_path = File.join(JPDFER_ROOT, 'spec', 'data')
+    @data_path = File.join(ROOT, 'spec', 'data')
     @pdf_path = File.join(@data_path, 'simple_form.pdf')
     @pdf = Pdf.new(@pdf_path)
     @unfilled_fields = {
@@ -374,4 +376,6 @@ describe "Pdf Acceptance" do
 
   # set_field returns some error if the form field is incorrect (e.g. setting a checkbox with something silly like 'monkey' or 'true' instead of 'Yes'
   # save_as returns *UNTESTED* if the PDF form is not valid
+end
+
 end
