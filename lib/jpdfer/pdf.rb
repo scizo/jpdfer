@@ -116,7 +116,7 @@ module Jpdfer
       raise ReadOnlyError.new('Previously saved pdfs are read-only') if @saved
       name = name.to_sym
       raise NonexistentFieldError.new("'#{name}' field does not exist in form") unless has_field?(name)
-      @stamper.getAcroFields.setField(name.to_s, value)
+      @stamper.getAcroFields.setField(name.to_s, value.to_s)
       value
     end
 

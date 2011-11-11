@@ -4,7 +4,7 @@
 # development environment upon cd'ing into the directory
 
 # First we specify our desired <ruby>[@<gemset>], the @gemset name is optional.
-environment_id="jruby-1.6.2@jpdfer"
+environment_id="jruby-1.6.4@jpdfer"
 
 #
 # First we attempt to load the desired environment directly from the environment
@@ -21,4 +21,3 @@ else
 fi
 
 # ======================================================================
-export JRUBY_OPTS=--1.9
