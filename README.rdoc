@@ -9,4 +9,6 @@ you to:
 * Flatten PDF forms
 
 
+= TODO
 
+* Add checkbox field to simple_form.pdf
