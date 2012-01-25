@@ -10,12 +10,6 @@ describe Pdf do
     @pdf = Pdf.new(@pdf_path)
   end
 
-  describe 'sanity check' do
-    it 'should be sane' do
-      42.should == 42
-    end
-  end
-
   describe '.new' do
     it 'should create new pdf' do
       @pdf.should_not be_nil

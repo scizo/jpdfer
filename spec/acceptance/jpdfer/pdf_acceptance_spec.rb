@@ -23,12 +23,6 @@ describe "Pdf Acceptance" do
     }
   end
 
-  describe 'sanity check' do
-    it 'should be sane' do
-      69.should == 69
-    end
-  end
-
   describe '.new' do
     it 'should create new pdf' do
       @pdf.should_not be_nil
@@ -46,7 +40,7 @@ describe "Pdf Acceptance" do
           @keystore = KeyStore.new(
             File.join(@data_path, 'keystore.ks'),
             'jpdfer',
-            'durrderp',
+            'durrderp'
           )
           @pdf = Pdf.new(@pdf_path, :keystore => @keystore)
           @signed_pdf_path = File.join(@data_path, 'new_signed.pdf')

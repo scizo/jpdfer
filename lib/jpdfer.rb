@@ -4,13 +4,14 @@ require 'json'
 require 'nokogiri'
 
 module Jpdfer
-  ROOT=File.expand_path(File.join(File.dirname(__FILE__), '..'))
+  ROOT = File.expand_path('..', File.dirname(__FILE__))
 end
 
-require File.join(Jpdfer::ROOT, 'jars', 'itextpdf-5.1.1.jar')
-require File.join(Jpdfer::ROOT, 'jars', 'bcprov-jdk16-146.jar')
-require File.join(Jpdfer::ROOT, 'jars', 'bctsp-jdk16-146.jar')
-require File.join(Jpdfer::ROOT, 'jars', 'bcmail-jdk16-146.jar')
+require File.expand_path('jars/itextpdf-5.1.1.jar', Jpdfer::ROOT)
+require File.expand_path('jars/bcprov-jdk16-146.jar', Jpdfer::ROOT)
+require File.expand_path('jars/bctsp-jdk16-146.jar', Jpdfer::ROOT)
+require File.expand_path('jars/bcmail-jdk16-146.jar', Jpdfer::ROOT)
 
-require File.join(Jpdfer::ROOT, 'lib', 'jpdfer', 'pdf')
-require File.join(Jpdfer::ROOT, 'lib', 'jpdfer', 'key_store')
+require 'jpdfer/pdf'
+require 'jpdfer/key_store'
+require 'jpdfer/version'
