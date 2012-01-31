@@ -6,6 +6,8 @@ module Jpdfer
   class Pdf
     class NonexistentFieldError < Exception; end
     class ReadOnlyError < Exception; end
+    include_class Java::com.itextpdf.text.Image
+    include_class Java::java.net.URL
     include_package "com.itextpdf.text.pdf"
     include_package "com.itextpdf.text.xml.xmp"
 
@@ -210,6 +212,16 @@ module Jpdfer
     # Sets the location of the signature on the pdf
     def set_signature_location(location)
       @stamper.getSignatureAppearance.setLocation(location)
+    end
+
+    # Adds the image at +image_path+ to the given +page+, at coordinates +x+ and +y+
+    def add_image(image_path, page, x, y, scale=1.0)
+      raise ReadOnlyError.new('Previously saved pdfs are read-only') if @saved
+      canvas = @stamper.getOverContent(page)
+      image = Image.getInstance(image_path)
+      image.setAbsolutePosition(x, y)
+      image.scalePercent(scale * 100)
+      canvas.addImage(image, false)
     end
 
   end
