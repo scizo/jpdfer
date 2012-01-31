@@ -215,11 +215,12 @@ module Jpdfer
     end
 
     # Adds the image at +image_path+ to the given +page+, at coordinates +x+ and +y+
-    def add_image(image_path, page, x, y)
+    def add_image(image_path, page, x, y, scale=1.0)
       raise ReadOnlyError.new('Previously saved pdfs are read-only') if @saved
       canvas = @stamper.getOverContent(page)
       image = Image.getInstance(image_path)
       image.setAbsolutePosition(x, y)
+      image.scalePercent(scale * 100)
       canvas.addImage(image, false)
     end
 
