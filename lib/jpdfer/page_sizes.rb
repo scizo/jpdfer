@@ -1,0 +1,62 @@
+module Jpdfer
+  include_package "com.itextpdf.text"
+
+  def self.dimension_array(page_size)
+    [page_size.width, page_size.height]
+  end
+
+  PAGE_SIZES = {
+    dimension_array(PageSize::_11X17) => :'11x17',
+    dimension_array(PageSize::A0) => :a0,
+    dimension_array(PageSize::A1) => :a1,
+    dimension_array(PageSize::A10) => :a10,
+    dimension_array(PageSize::A2) => :a2,
+    dimension_array(PageSize::A3) => :a3,
+    dimension_array(PageSize::A4) => :a4,
+    dimension_array(PageSize::A5) => :a5,
+    dimension_array(PageSize::A6) => :a6,
+    dimension_array(PageSize::A7) => :a7,
+    dimension_array(PageSize::A8) => :a8,
+    dimension_array(PageSize::A9) => :a9,
+    dimension_array(PageSize::ARCH_A) => :arch_a,
+    dimension_array(PageSize::ARCH_B) => :arch_b,
+    dimension_array(PageSize::ARCH_C) => :arch_c,
+    dimension_array(PageSize::ARCH_D) => :arch_d,
+    dimension_array(PageSize::ARCH_E) => :arch_e,
+    dimension_array(PageSize::B0) => :b0,
+    dimension_array(PageSize::B1) => :b1,
+    dimension_array(PageSize::B10) => :b10,
+    dimension_array(PageSize::B2) => :b2,
+    dimension_array(PageSize::B3) => :b3,
+    dimension_array(PageSize::B4) => :b4,
+    dimension_array(PageSize::B5) => :b5,
+    dimension_array(PageSize::B6) => :b6,
+    dimension_array(PageSize::B7) => :b7,
+    dimension_array(PageSize::B8) => :b8,
+    dimension_array(PageSize::B9) => :b9,
+    dimension_array(PageSize::CROWN_OCTAVO) => :crown_octavo,
+    dimension_array(PageSize::CROWN_QUARTO) => :crown_quarto,
+    dimension_array(PageSize::DEMY_OCTAVO) => :demy_octavo,
+    dimension_array(PageSize::DEMY_QUARTO) => :demy_quarto,
+    dimension_array(PageSize::EXECUTIVE) => :executive,
+    dimension_array(PageSize::FLSA) => :flsa,
+    dimension_array(PageSize::FLSE) => :flse,
+    dimension_array(PageSize::HALFLETTER) => :halfletter,
+    dimension_array(PageSize::ID_1) => :id_1,
+    dimension_array(PageSize::ID_2) => :id_2,
+    dimension_array(PageSize::ID_3) => :id_3,
+    dimension_array(PageSize::LARGE_CROWN_OCTAVO) => :large_crown_octavo,
+    dimension_array(PageSize::LARGE_CROWN_QUARTO) => :large_crown_quarto,
+    dimension_array(PageSize::LEDGER) => :ledger,
+    dimension_array(PageSize::LEGAL) => :legal,
+    dimension_array(PageSize::LETTER) => :letter,
+    dimension_array(PageSize::NOTE) => :note,
+    dimension_array(PageSize::PENGUIN_LARGE_PAPERBACK) => :penguin_large_paperback,
+    dimension_array(PageSize::PENGUIN_SMALL_PAPERBACK) => :penguin_small_paperback,
+    dimension_array(PageSize::POSTCARD) => :postcard,
+    dimension_array(PageSize::ROYAL_OCTAVO) => :royal_octavo,
+    dimension_array(PageSize::ROYAL_QUARTO) => :royal_quarto,
+    dimension_array(PageSize::SMALL_PAPERBACK) => :small_paperback,
+    dimension_array(PageSize::TABLOID) => :tabloid
+  }
+end

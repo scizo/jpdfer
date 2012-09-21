@@ -1,3 +1,4 @@
+require 'jpdfer/page_sizes'
 # High-level/convenience wrapper class for a PDF document.
 
 module Jpdfer
@@ -88,6 +89,22 @@ module Jpdfer
       File.open(path, 'wb') do |file|
         file.write(@output_buffer.string)
       end
+    end
+
+    # Returns the page size of the pdf as [width (Float), height (Float)]
+    def page_size
+      page_size = @stamper.reader.crop_box(1)
+      if @stamper.reader.page_rotation(1) % 180 == 0
+        [page_size.width, page_size.height]
+      else
+        [page_size.height, page_size.width]
+      end
+    end
+
+    # Returns the page type of the pdf or :unknown
+    # See Jpdfer::PAGES_SIZES
+    def page_type
+      PAGE_SIZES.fetch(page_size, :unknown)
     end
 
     # Returns fields defined in this PDF form and their values, if any.

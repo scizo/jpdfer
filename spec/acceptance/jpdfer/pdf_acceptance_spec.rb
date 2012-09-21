@@ -128,6 +128,18 @@ describe "Pdf Acceptance" do
     end
   end
 
+  describe '#page_size' do
+    it 'should return the page size as an array of floats' do
+      @pdf.page_size.should == [612.0, 792.0]
+    end
+  end
+
+  describe '#page_type' do
+    it 'should return the page type if it exists' do
+      @pdf.page_type.should == :letter
+    end
+  end
+
   describe '#certification_level' do
     it 'should return nil for an unsigned pdf' do
       @pdf.certification_level.should == :not_certified
