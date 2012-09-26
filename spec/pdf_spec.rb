@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Jpdfer
 
-describe "Pdf Acceptance" do
+describe Pdf do
   before(:each) do
     @data_path = File.join(ROOT, 'spec', 'data')
     @pdf_path = File.join(@data_path, 'simple_form.pdf')
@@ -109,7 +109,7 @@ describe "Pdf Acceptance" do
       FileUtils.rm_f(@save_path)
     end
 
-    it 'should instaniate a new pdf a pass it to the block and then save it' do
+    it 'should instaniate a new pdf and yield it to the block and then save it' do
       Pdf.open(@pdf_path, @save_path) do |pdf|
         pdf.set_fields(@filled_fields)
       end
@@ -125,6 +125,41 @@ describe "Pdf Acceptance" do
         new_pdf = Pdf.new(@save_path)
         new_pdf.flattened_fields.should == @filled_fields
       end
+    end
+  end
+
+  describe '.concatenate' do
+    before(:each) do
+      @pdf_1, @pdf_2 = Pdf.new(@pdf_path), Pdf.new(@pdf_path)
+      @save_path = File.join(@data_path, 'new_pdf.pdf')
+    end
+
+    after(:each) do
+      FileUtils.rm_f(@save_path)
+    end
+
+    it 'should return a new pdf with the pages of all the given pdfs' do
+      pdf = Pdf.concatenate([@pdf_1, @pdf_2])
+      pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
+    end
+
+    it 'should yield the pdf if given a block and then save it' do
+      Pdf.concatenate([@pdf_1, @pdf_2], @save_path) do |pdf|
+        pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
+      end
+
+      new_pdf = Pdf.new(@save_path)
+      new_pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
+    end
+  end
+
+  describe 'forwards any potential messages to the reader if it will respond' do
+    it 'should respond to number_of_pages' do
+      @pdf.number_of_pages.should == 1
+    end
+
+    it 'should not respond to foo_bar' do
+      lambda { @pdf.foo_bar }.should raise_error NoMethodError
     end
   end
 
@@ -272,30 +307,6 @@ describe "Pdf Acceptance" do
 
         new_pdf = Pdf.new(@new_path)
         new_pdf.should_not have_form
-      end
-    end
-
-    describe 'with a saved PDF' do
-      before(:each) do
-        @pdf.save_as(@new_path)
-      end
-
-      describe 'saving again' do
-        it "should raise Pdf::ReadOnlyError" do
-          lambda { @pdf.save_as(@new_path) }.should raise_error(Pdf::ReadOnlyError, /Cannot save a previously saved pdf/)
-        end
-      end
-
-      describe "#set_field" do
-        it "should raise Pdf:ReadOnlyError" do
-          lambda { @pdf.set_field(:important_field, 'I am important') }.should raise_error(Pdf::ReadOnlyError, /Previously saved pdfs are read-only/)
-        end
-      end
-
-      describe "#set_fields" do
-        it "should raise Pdf::ReadOnlyError" do
-          lambda { @pdf.set_fields(@filled_fields) }.should raise_error(Pdf::ReadOnlyError, /Previously saved pdfs are read-only/)
-        end
       end
     end
   end
