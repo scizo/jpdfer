@@ -279,6 +279,15 @@ module Jpdfer
       canvas.addImage(image, false)
     end
 
+    # Replaces any javascript currently attached to the page with
+    # the contents of +script+
+    #
+    # Returns +script+
+    def javascript=(script)
+      @stamper.addJavaScript(script)
+      script
+    end
+
     private
 
     def init(data)
