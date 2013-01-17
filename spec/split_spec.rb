@@ -41,6 +41,10 @@ module Jpdfer
       it "should convert '1-2,3,2,4-5,6' to ['1-3','2,4-6']" do
         Jpdfer::Split.split_string('1-2,3,2,4-5,6').should == ['1-3','2,4-6']
       end
+
+      it "should convert '1,1,1,2,3,4,5,2,3,5,6' to ['1', '1', '1-5', '2-3,5-6']" do
+        Jpdfer::Split.split_string('1,1,1,2,3,4,5,2,3,5,6').should == ['1', '1', '1-5', '2-3,5-6']
+      end
     end
   end
 end

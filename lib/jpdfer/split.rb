@@ -16,7 +16,7 @@ module Jpdfer
 
     def reduce_interval_list_list(interval_list_list)
       interval_list_list.reduce([[]]) do |result,element|
-        new_last,remainder=merge_interval_list_lists(result[-1],element)
+        new_last,remainder=merge_interval_list_lists(result.last,element)
         if remainder.empty?
           replace_last(result,new_last)
         else
@@ -60,12 +60,8 @@ module Jpdfer
         return [interval]
       end
 
-      last = interval_list[-1]
-
-      if adjoining?(last,interval)
-        result=interval_list.clone
-        result[-1]=join_intervals(last,interval)
-        return result
+      if adjoining?(interval_list.last,interval)
+        return replace_last(interval_list,join_intervals(interval_list.last,interval))
       end
 
       interval_list.clone << interval
