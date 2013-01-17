@@ -3,63 +3,88 @@ module Jpdfer
     module_function
 
     def split_string(interval_string)
-      result = build_string(split_string_aux([],nil,interval_string.split(',')))
-      puts "split_string('#{interval_string}'): '#{result}'"
-      result
+      interval_list_list = build_interval_list_list(interval_string)
+      
+      reduced_interval_list_list = reduce_interval_list_list(interval_list_list)
+      
+      build_interval_string_list(reduced_interval_list_list)
     end
 
-    def split_string_aux(result,last,interval_strings)
+    def build_interval_list_list(interval_strings)
+      interval_strings.split(',').map {|s| [string_to_interval(s)]}
+    end
 
-      puts "#{result.inspect},#{last.inspect},#{interval_strings.inspect}"
-      
-      next_interval_string,new_interval_strings = next_interval(interval_strings)
-
-      puts "next_interval_string: #{next_interval_string},new_interval_strings: #{new_interval_strings.inspect}"
-      
-      if next_interval_string.nil?
-        if last.nil?
-          return result
+    def reduce_interval_list_list(interval_list_list)
+      interval_list_list.reduce([[]]) do |result,element|
+        new_last,remainder=merge_interval_list_lists(result[-1],element)
+        if remainder.empty?
+          replace_last(result,new_last)
         else
-          return result << last
+          result.clone << element
         end
       end
-
-      next_interval = string_to_interval(next_interval_string)
-
-      if last.nil?
-        return split_string_aux(result, next_interval,new_interval_strings)
-      end
-
-      if  (overlapping?(next_interval,last) ||
-          result.any? {|interval| overlapping?(interval,next_interval)})
-        
-        return split_string_aux(result << last,next_interval,new_interval_strings)
-      end
-      
-      if adjoining?(last,next_interval)
-        return split_string_aux(result,join_intervals(last,next_interval),new_interval_strings)
-      end
-      
-      return split_string_aux(result << last, next_interval,new_interval_strings)
     end
 
-    def next_interval(interval_strings)
-      first,rest = interval_strings[0],interval_strings[1..-1]
-      [first,rest]
+    def replace_last(list,new_last)
+      new_list=list.clone
+      new_list[-1]=new_last
+      new_list
     end
     
-    def build_string(intervals)
+    def merge_interval_list_lists(list_a,list_b)
+      if list_a.empty?
+        return list_b,[]
+      end
+      
+      if list_b.empty?
+        return list_a,list_b
+      end
+      
+      head_b = list_b[0]
+      tail_b = list_b[1..-1]
+
+      if can_merge?(list_a,head_b)
+        return merge_interval_list_lists(merge_interval(list_a,head_b),tail_b)
+      else
+        return list_a,list_b
+      end
+    end
+
+    def can_merge?(interval_list,interval)
+      !interval_list.nil? &&
+      !interval_list.any? {|list_interval| overlapping?(list_interval,interval)}
+    end
+    
+    def merge_interval(interval_list,interval)
+      if interval_list.nil? || interval_list.empty?
+        return [interval]
+      end
+
+      last = interval_list[-1]
+
+      if adjoining?(last,interval)
+        result=interval_list.clone
+        result[-1]=join_intervals(last,interval)
+        return result
+      end
+
+      interval_list.clone << interval
+    end
+    
+    def build_interval_string_list(interval_list_list)
+      interval_list_list.map {|intervals| build_interval_string(intervals)}
+    end
+    
+    def build_interval_string(intervals)
       intervals.map do |i|
         i0,i1=i
         i0 == i1 ? "#{i0}" : "#{i0}-#{i1}"
       end.join(',')
     end
     
-
     def adjoining?(a,b)
       a0,a1=a
       b0,b1=b
-      puts "#{a1},#{b0}"
       b0 == (a1 + 1)
     end
 
@@ -67,7 +92,6 @@ module Jpdfer
       if !adjoining?(a,b)
         raise StandardError.new("can't join intervals #{a.inspect},#{b.inspect}")
       end
-
       [a[0],b[1]]
     end
     
@@ -94,11 +118,14 @@ module Jpdfer
     end
     
     def string_to_interval(s)
+      if s.nil? || s.empty?
+        return nil
+      end
+      
       interval=s.split('-').map{|s| verified_to_i(s)}
       return interval if interval.size == 2
       return interval << interval[0] if interval.size == 1
       return nil
     end
-        
   end
 end
