@@ -153,13 +153,10 @@ describe Pdf do
       end
 
       it 'should yield the pdf with the right contents' do
-        puts "***** --- *****"
         pdf_3=Pdf.concatenate([@pdf_1,@pdf_2],@save_path)
         pdf_4=Pdf.concatenate([pdf_3,pdf_3,pdf_3])
         pdf_4.number_of_pages.should == 6
-        #pdf_5=Pdf.concatenate([pdf_4,pdf_4])
         pdf_5=Pdf.concatenate([[pdf_4,'1-4,1,2'],[pdf_3,'1-2']],@save_path)
-        puts "pdf_5: #{pdf_5.number_of_pages}"
         pdf_5.number_of_pages.should == 8
       end
     end

@@ -49,7 +49,6 @@ module Jpdfer
         if page_ranges_raw
           page_ranges = Split.split_string(page_ranges_raw)
           page_ranges.each do |page_range|
-            puts "page_range: #{page_range}"
             concatenator.addDocument pdf.reader, page_range
           end
         else
