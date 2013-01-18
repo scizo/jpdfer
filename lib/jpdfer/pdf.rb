@@ -45,8 +45,16 @@ module Jpdfer
       flatten = options.delete(:flatten)
       concatenator = PdfCopyFields.new output_buffer.to_outputstream
 
-      pdfs.each do |pdf|
-        concatenator.addDocument pdf.reader
+      pdfs.each do |(pdf, page_ranges_raw)|
+        if page_ranges_raw
+          page_ranges = Split.split_string(page_ranges_raw)
+          page_ranges.each do |page_range|
+            puts "page_range: #{page_range}"
+            concatenator.addDocument pdf.reader, page_range
+          end
+        else
+          concatenator.addDocument pdf.reader
+        end
       end
       concatenator.close
 
@@ -57,7 +65,7 @@ module Jpdfer
       end
       pdf
     end
-
+    
     # A convenience method which initializes a new pdf. If a block is given,
     # the new pdf is yielded and saved to +save_path+ after the block has been called.
     #
