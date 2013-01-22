@@ -1,4 +1,5 @@
 require 'jpdfer/page_sizes'
+require 'jpdfer/page_range_utilities'
 # High-level/convenience wrapper class for a PDF document.
 
 module Jpdfer
@@ -45,11 +46,12 @@ module Jpdfer
       flatten = options.delete(:flatten)
       concatenator = PdfCopyFields.new output_buffer.to_outputstream
 
-      pdfs.each do |(pdf, page_ranges_raw)|
-        if page_ranges_raw
-          page_ranges = Split.split_string(page_ranges_raw)
-          page_ranges.each do |page_range|
-            concatenator.addDocument pdf.reader, page_range
+      pdfs.each do |pdf, page_range|
+        if page_range
+          PageRangeUtilities::normalize_page_range(page_range).each do |pages|
+            # We need to help jruby convert Fixnum to java.lang.Integer. It defaults to java.lang.Long
+            pages = pages.map {|page| Java::JavaLang::Integer.new page}
+            concatenator.addDocument pdf.reader, pages
           end
         else
           concatenator.addDocument pdf.reader
@@ -64,7 +66,7 @@ module Jpdfer
       end
       pdf
     end
-    
+
     # A convenience method which initializes a new pdf. If a block is given,
     # the new pdf is yielded and saved to +save_path+ after the block has been called.
     #

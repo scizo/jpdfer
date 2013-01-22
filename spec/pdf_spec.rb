@@ -128,38 +128,35 @@ describe Pdf do
     end
   end
 
-    describe '.concatenate' do
-      before(:each) do
-        @pdf_1, @pdf_2 = Pdf.new(@pdf_path), Pdf.new(@pdf_path)
-        @save_path = File.join(@data_path, 'new_pdf.pdf')
-      end
+  describe '.concatenate' do
+    before(:each) do
+      @pdf_1, @pdf_2 = Pdf.new(@pdf_path), Pdf.new(@pdf_path)
+      @save_path = File.join(@data_path, 'new_pdf.pdf')
+    end
 
-      after(:each) do
-        FileUtils.rm_f(@save_path)
-      end
+    after(:each) do
+      FileUtils.rm_f(@save_path)
+    end
 
-      it 'should return a new pdf with the pages of all the given pdfs' do
-        pdf = Pdf.concatenate([@pdf_1, @pdf_2])
+    it 'should return a new pdf with the pages of all the given pdfs' do
+      pdf = Pdf.concatenate([@pdf_1, @pdf_2])
+      pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
+    end
+
+    it 'should yield the pdf if given a block and then save it' do
+      Pdf.concatenate([@pdf_1, @pdf_2], @save_path) do |pdf|
         pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
       end
 
-      it 'should yield the pdf if given a block and then save it' do
-        Pdf.concatenate([@pdf_1, @pdf_2], @save_path) do |pdf|
-          pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
-        end
-
-        new_pdf = Pdf.new(@save_path)
-        new_pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
-      end
-
-      it 'should yield the pdf with the right contents' do
-        pdf_3=Pdf.concatenate([@pdf_1,@pdf_2],@save_path)
-        pdf_4=Pdf.concatenate([pdf_3,pdf_3,pdf_3])
-        pdf_4.number_of_pages.should == 6
-        pdf_5=Pdf.concatenate([[pdf_4,'1-4,1,2'],[pdf_3,'1-2']],@save_path)
-        pdf_5.number_of_pages.should == 8
-      end
+      new_pdf = Pdf.new(@save_path)
+      new_pdf.number_of_pages.should == @pdf_1.number_of_pages + @pdf_2.number_of_pages
     end
+
+    it 'should allow the specification of a page range for a pdf' do
+      pdf = Pdf.concatenate([[@pdf_1, '1,1,1'], @pdf_2], @save_path)
+      pdf.number_of_pages.should == 3 + @pdf_2.number_of_pages
+    end
+  end
 
   describe 'forwards any potential messages to the reader if it will respond' do
     it 'should respond to number_of_pages' do
