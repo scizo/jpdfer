@@ -8,7 +8,11 @@ module Jpdfer
   class Pdf
     class NonexistentFieldError < Exception; end
     class ReadOnlyError < Exception; end
+    include_class Java::com.itextpdf.text.Element
+    include_class Java::com.itextpdf.text.Font
+    include_class Java::com.itextpdf.text.Font::FontFamily
     include_class Java::com.itextpdf.text.Image
+    include_class Java::com.itextpdf.text.Phrase
     include_class Java::java.net.URL
     include_package "com.itextpdf.text.pdf"
     include_package "com.itextpdf.text.xml.xmp"
@@ -286,6 +290,20 @@ module Jpdfer
       image.setAbsolutePosition(x, y)
       image.scalePercent(scale * 100)
       canvas.addImage(image, false)
+    end
+
+    # Add watermark text to all pages at coordinates +x+ and +y+
+    def add_watermark(text, x, y, options={})
+      raise ReadOnlyError.new('Previously saved pdfs are read-only') if @saved
+
+      alignment = Element::ALIGN_CENTER
+      phrase = Phrase.new(text, options[:font] || Font.new(FontFamily::HELVETICA, 132, Font::BOLD, GrayColor.new(0.90)))
+      rotation = options[:rotation] || 45
+
+      1.upto(@reader.getNumberOfPages).each do |page|
+        canvas = @stamper.getUnderContent(page)
+        ColumnText.showTextAligned(canvas, alignment, phrase, x, y, rotation)
+      end
     end
 
     # Replaces any javascript currently attached to the page with
