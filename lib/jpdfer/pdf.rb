@@ -293,11 +293,31 @@ module Jpdfer
     end
 
     # Add watermark text to all pages at coordinates +x+ and +y+
-    def add_watermark(text, x, y, options={})
+    #
+    #
+    # options:
+    #
+    #   :x The placement of the watermark on the x-axis
+    #     Default: The center of the pdf
+    #
+    #   :y The placement of the watermark on the y-axis
+    #     Default: The center of the pdf
+    #
+    #   :font should be an instance of com.itextpdf.text.Font to be used for the watermark.
+    #      Default: Helvetica Bold 132pt 0.9 Gray
+    #
+    #   :rotation is an angle given in degrees that will rotate the watermark.
+    #      Default: 45
+    #
+    #   :alignment one of the com.itextpdf.text.Element alignment values
+    #     Default: ALIGN_CENTER
+    def add_watermark(text, options={})
       raise ReadOnlyError.new('Previously saved pdfs are read-only') if @saved
 
+      x = options[:x] || @reader.crop_box(1).width / 2
+      y = options[:y] || @reader.crop_box(1).height / 2
       alignment = options[:alignment] || Element::ALIGN_CENTER
-      phrase = Phrase.new(text, options[:font] || Font.new(FontFamily::HELVETICA, 132, Font::BOLD, GrayColor.new(0.90)))
+      phrase = Phrase.new(text, options[:font] || default_watermark_font)
       rotation = options[:rotation] || 45
 
       1.upto(@reader.getNumberOfPages).each do |page|
@@ -322,6 +342,14 @@ module Jpdfer
       @reader = PdfReader.new(data.to_java_bytes)
       @output_buffer = StringIO.new
       @stamper = create_stamper
+    end
+
+    def default_watermark_font
+      Font.new \
+        FontFamily::HELVETICA,
+        132,
+        Font::BOLD,
+        GrayColor.new(0.90)
     end
 
     def create_stamper
