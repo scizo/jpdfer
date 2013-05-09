@@ -296,7 +296,7 @@ module Jpdfer
     def add_watermark(text, x, y, options={})
       raise ReadOnlyError.new('Previously saved pdfs are read-only') if @saved
 
-      alignment = Element::ALIGN_CENTER
+      alignment = options[:alignment] || Element::ALIGN_CENTER
       phrase = Phrase.new(text, options[:font] || Font.new(FontFamily::HELVETICA, 132, Font::BOLD, GrayColor.new(0.90)))
       rotation = options[:rotation] || 45
 
