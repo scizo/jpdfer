@@ -6,8 +6,8 @@ module Jpdfer
 
   # PDF Document with a form that can be read, filled, and saved.
   class Pdf
-    class NonexistentFieldError < Exception; end
-    class ReadOnlyError < Exception; end
+    class NonexistentFieldError < StandardError; end
+    class ReadOnlyError < StandardError; end
     include_class Java::com.itextpdf.text.Element
     include_class Java::com.itextpdf.text.Font
     include_class Java::com.itextpdf.text.Font::FontFamily
