@@ -8,12 +8,12 @@ module Jpdfer
   class Pdf
     class NonexistentFieldError < StandardError; end
     class ReadOnlyError < StandardError; end
-    include_class Java::com.itextpdf.text.Element
-    include_class Java::com.itextpdf.text.Font
-    include_class Java::com.itextpdf.text.Font::FontFamily
-    include_class Java::com.itextpdf.text.Image
-    include_class Java::com.itextpdf.text.Phrase
-    include_class Java::java.net.URL
+    java_import Java::com.itextpdf.text.Element
+    java_import Java::com.itextpdf.text.Font
+    java_import Java::com.itextpdf.text.Font::FontFamily
+    java_import Java::com.itextpdf.text.Image
+    java_import Java::com.itextpdf.text.Phrase
+    java_import Java::java.net.URL
     include_package "com.itextpdf.text.pdf"
     include_package "com.itextpdf.text.xml.xmp"
 
