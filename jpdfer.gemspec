@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.platform = 'java'
 
   s.add_runtime_dependency "nokogiri"
-  s.add_runtime_dependency "json-jruby"
+  s.add_runtime_dependency "json"
 
   s.add_development_dependency "rspec"
 
