@@ -137,8 +137,8 @@ module Jpdfer
 
     # Returns the page size of the pdf as [width (Float), height (Float)]
     def page_size
-      page_size = @reader.crop_box(1)
-      if @reader.page_rotation(1) % 180 == 0
+      page_size = @reader.getCropBox(1)
+      if @reader.getPageRotation(1) % 180 == 0
         [page_size.width, page_size.height]
       else
         [page_size.height, page_size.width]
